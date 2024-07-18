@@ -1,6 +1,9 @@
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
+const cors = require('cors')
+
+const baseUrl = '/api/persons'
 
 morgan.token('post', function (req, res) {
   console.log(req.method)
@@ -11,6 +14,7 @@ morgan.token('post', function (req, res) {
 
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post'))
+app.use(cors())
 
 let agenda = [
   { 
@@ -39,11 +43,11 @@ const generateId = () => {
   return Math.floor(Math.random() * 99999999999999);
 }
 
-app.get('/api/persons', (request, response) => {
+app.get(baseUrl, (request, response) => {
   response.json(agenda)
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get(`${baseUrl}/:id`, (request, response) => {
   const id = Number(request.params.id)
   const person = agenda.find(p => p.id === id)
   console.log(id)
@@ -62,7 +66,7 @@ app.get('/info', (request, response) => {
   )
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete(`${baseUrl}/:id`, (request, response) => {
   const id = Number(request.params.id)
   const person = agenda.find(p => p.id === id)
 
@@ -74,7 +78,7 @@ app.delete('/api/persons/:id', (request, response) => {
   }
 })
 
-app.post('/api/persons', (request, response) => {
+app.post(baseUrl, (request, response) => {
   const body = request.body
 
   if (!body.name || !body.number) {
